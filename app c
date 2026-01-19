@@ -1,1 +1,218 @@
+#define _CRT_SECURE_NO_WARNINGS
+#define _USE_MATH_DEFINES
+#include <stdio.h>
+#include <math.h>
+#include <locale.h>
+#include <stdlib.h>
+#include <time.h>
 
+// Вывод массива double
+void put_array_d(double* a, int n) {
+    for (int i = 0; i < n; i++) printf("%.2f ", a[i]);
+    printf("\n");
+}
+
+// Вывод массива int
+void put_array_i(int* a, int n) {
+    for (int i = 0; i < n; i++) printf("%d ", a[i]);
+    printf("\n");
+}
+void prog1() {
+    printf("=== Сумма после минимального по модулю ===\n");
+    int n, min_i = 0, sum = 0;
+    printf("Количество элементов: ");
+    scanf("%d", &n);
+    int* a = malloc(n * sizeof(int));
+    
+    printf("Введите %d чисел:\n", n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &a[i]);
+        if (abs(a[i]) < abs(a[min_i])) min_i = i;
+    }
+    
+    for (int i = min_i + 1; i < n; i++) sum += a[i];
+    printf("Сумма после элемента с мин. модулем: %d\n", sum);
+    free(a);
+}
+
+// ========== Программа 2: Операции с double ==========
+void prog2() {
+    printf("=== Операции с double массивом ===\n");
+    int n;
+    printf("n: ");
+    scanf("%d", &n);
+    double* a = malloc(n * sizeof(double));
+    
+    // Заполнение
+    double x, dx;
+    printf("x dx: ");
+    scanf("%lf %lf", &x, &dx);
+    for (int i = 0; i < n; i++) {
+        a[i] = x * x + 2 * M_PI * cos(x);
+        x += dx;
+    }
+    printf("Массив: "); put_array_d(a, n);
+    
+    // Сумма
+    int b, e;
+    printf("от до: ");
+    scanf("%d %d", &b, &e);
+    double sum = 0;
+    for (int i = b; i <= e; i++) sum += a[i];
+    printf("Сумма: %.2f\n", sum);
+    
+    // Поиск
+    double v;
+    printf("Найти: ");
+    scanf("%lf", &v);
+    int found = -1;
+    for (int i = 0; i < n; i++) 
+        if (fabs(a[i] - v) < 0.001) { found = i; break; }
+    printf("Позиция: %d\n", found);
+    
+    // Округление вверх
+    double* copy = malloc(n * sizeof(double));
+    for (int i = 0; i < n; i++) copy[i] = ceil(a[i]);
+    printf("После ceil: "); put_array_d(copy, n);
+    
+    // Максимум на четных/нечетных позициях
+    int t;
+    printf("Тип (0-чет/1-нечет): ");
+    scanf("%d", &t);
+    double max_val = 0;
+    int got = 0;
+    for (int i = 0; i < n; i++) {
+        if ((t == 0 && i%2==0) || (t==1 && i%2==1)) {
+            if (!got || a[i] > max_val) max_val = a[i], got = 1;
+        }
+    }
+    printf("Макс: %.2f\n", got ? max_val : 0);
+    
+    free(copy);
+    free(a);
+}
+
+// Заполнение случайными числами
+void fill_random(int* a, int n) {
+    for (int i = 0; i < n; i++) 
+        a[i] = rand() % 1000 - 500;
+}
+
+// Сортировки
+void bubble(int* a, int n) {
+    for (int i = 0; i < n-1; i++)
+        for (int j = 0; j < n-i-1; j++)
+            if (a[j] > a[j+1]) {
+                int t = a[j]; a[j] = a[j+1]; a[j+1] = t;
+            }
+}
+
+void shaker(int* a, int n) {
+    int l = 0, r = n-1;
+    while (l < r) {
+        for (int i = l; i < r; i++)
+            if (a[i] > a[i+1]) { int t = a[i]; a[i] = a[i+1]; a[i+1] = t; }
+        r--;
+        for (int i = r; i > l; i--)
+            if (a[i] < a[i-1]) { int t = a[i]; a[i] = a[i-1]; a[i-1] = t; }
+        l++;
+    }
+}
+
+void selection(int* a, int n) {
+    for (int i = 0; i < n-1; i++) {
+        int min = i;
+        for (int j = i+1; j < n; j++)
+            if (a[j] < a[min]) min = j;
+        if (min != i) { int t = a[i]; a[i] = a[min]; a[min] = t; }
+    }
+}
+
+void insertion(int* a, int n) {
+    for (int i = 1; i < n; i++) {
+        int key = a[i], j = i-1;
+        while (j >= 0 && a[j] > key) {
+            a[j+1] = a[j]; j--;
+        }
+        a[j+1] = key;
+    }
+}
+
+void prog3() {
+    printf("=== Сортировки ===\n");
+    srand(time(NULL));
+    
+    int n;
+    printf("Размер массива: ");
+    scanf("%d", &n);
+    if (n <= 0) return;
+    
+    int* orig = malloc(n * sizeof(int));
+    int* arr = malloc(n * sizeof(int));
+    fill_random(orig, n);
+    
+    printf("\nПервые 20 элементов: ");
+    put_array_i(orig, n > 20 ? 20 : n);
+    
+    printf("\nАлгоритмы:\n1-Пузырьковая\n2-Шейкерная\n3-Выбором\n4-Вставками\n5-Все\nВыбор: ");
+    int choice; scanf("%d", &choice);
+    
+    if (choice >= 1 && choice <= 4) {
+        for (int i = 0; i < n; i++) arr[i] = orig[i];
+        
+        clock_t start = clock();
+        switch(choice) {
+            case 1: bubble(arr, n); break;
+            case 2: shaker(arr, n); break;
+            case 3: selection(arr, n); break;
+            case 4: insertion(arr, n); break;
+        }
+        double time = (double)(clock() - start) / CLOCKS_PER_SEC;
+        
+        printf("\nОтсортировано (первые 20): ");
+        put_array_i(arr, n > 20 ? 20 : n);
+        printf("Время: %.4f сек\n", time);
+    }
+    else if (choice == 5) {
+        printf("\nТестируем все...\n");
+        char* names[] = {"Пузырьковая", "Шейкерная", "Выбором", "Вставками"};
+        void (*funcs[])(int*, int) = {bubble, shaker, selection, insertion};
+        
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < n; j++) arr[j] = orig[j];
+            clock_t start = clock();
+            funcs[i](arr, n);
+            double time = (double)(clock() - start) / CLOCKS_PER_SEC;
+            printf("%-12s: %.4f сек\n", names[i], time);
+        }
+    }
+    
+    free(orig); free(arr);
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    
+    while (1) {
+        printf("\n=== МЕНЮ ===\n");
+        printf("1. Сумма после мин. модуля\n");
+        printf("2. Операции с double\n");
+        printf("3. Сортировки\n");
+        printf("0. Выход\nВыбор: ");
+        
+        int choice; scanf("%d", &choice);
+        if (choice == 0) break;
+        
+        switch(choice) {
+            case 1: prog1(); break;
+            case 2: prog2(); break;
+            case 3: prog3(); break;
+            default: printf("Неверный выбор!\n");
+        }
+        
+        printf("\nНажмите Enter...");
+        getchar(); getchar();
+    }
+    
+    return 0;
+}
