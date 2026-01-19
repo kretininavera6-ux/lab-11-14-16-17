@@ -1,1 +1,175 @@
+#include "prog_functions.h"
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <time.h>
 
+// ========== Программа 1 ==========
+int prog1_sum_after_min_abs(int* arr, int n) {
+    if (n <= 0 || arr == NULL) return 0;
+    
+    int min_index = 0;
+    for (int i = 1; i < n; i++) {
+        if (abs(arr[i]) < abs(arr[min_index])) {
+            min_index = i;
+        }
+    }
+    
+    int sum = 0;
+    for (int i = min_index + 1; i < n; i++) {
+        sum += arr[i];
+    }
+    
+    return sum;
+}
+
+// ========== Программа 2 ==========
+double prog2_calc_value(double x) {
+    return x * x + 2 * M_PI * cos(x);
+}
+
+double prog2_array_sum(double* arr, int n, int begin, int end) {
+    if (arr == NULL || n <= 0 || begin < 0 || end >= n || begin > end) {
+        return 0.0;
+    }
+    
+    double sum = 0.0;
+    for (int i = begin; i <= end; i++) {
+        sum += arr[i];
+    }
+    return sum;
+}
+
+int prog2_find_value(double* arr, int n, double value) {
+    if (arr == NULL || n <= 0) return -1;
+    
+    for (int i = 0; i < n; i++) {
+        if (fabs(arr[i] - value) < 0.001) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+double* prog2_apply_ceil(double* arr, int n) {
+    if (arr == NULL || n <= 0) return NULL;
+    
+    double* result = (double*)malloc(n * sizeof(double));
+    if (result == NULL) return NULL;
+    
+    for (int i = 0; i < n; i++) {
+        result[i] = ceil(arr[i]);
+    }
+    return result;
+}
+
+double prog2_max_on_positions(double* arr, int n, int type) {
+    if (arr == NULL || n <= 0 || (type != 0 && type != 1)) {
+        return 0.0;
+    }
+    
+    double max_val = 0.0;
+    int found = 0;
+    
+    for (int i = 0; i < n; i++) {
+        if ((type == 0 && i % 2 == 0) || (type == 1 && i % 2 == 1)) {
+            if (!found || arr[i] > max_val) {
+                max_val = arr[i];
+                found = 1;
+            }
+        }
+    }
+    
+    return found ? max_val : 0.0;
+}
+
+// ========== Программа 3 ==========
+void prog3_fill_random(int* arr, int n) {
+    if (arr == NULL || n <= 0) return;
+    
+    for (int i = 0; i < n; i++) {
+        arr[i] = rand() % 1000 - 500; // -500 to 499
+    }
+}
+
+void prog3_bubble_sort(int* arr, int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void prog3_shaker_sort(int* arr, int n) {
+    int left = 0, right = n - 1;
+    
+    while (left < right) {
+        for (int i = left; i < right; i++) {
+            if (arr[i] > arr[i + 1]) {
+                int temp = arr[i];
+                arr[i] = arr[i + 1];
+                arr[i + 1] = temp;
+            }
+        }
+        right--;
+        
+        for (int i = right; i > left; i--) {
+            if (arr[i] < arr[i - 1]) {
+                int temp = arr[i];
+                arr[i] = arr[i - 1];
+                arr[i - 1] = temp;
+            }
+        }
+        left++;
+    }
+}
+
+void prog3_selection_sort(int* arr, int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int min_idx = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[min_idx]) {
+                min_idx = j;
+            }
+        }
+        if (min_idx != i) {
+            int temp = arr[i];
+            arr[i] = arr[min_idx];
+            arr[min_idx] = temp;
+        }
+    }
+}
+
+void prog3_insertion_sort(int* arr, int n) {
+    for (int i = 1; i < n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+double prog3_measure_sort_time(int* arr, int n, int sort_type) {
+    if (arr == NULL || n <= 0) return 0.0;
+    
+    clock_t start = clock();
+    
+    switch(sort_type) {
+        case 1: prog3_bubble_sort(arr, n); break;
+        case 2: prog3_shaker_sort(arr, n); break;
+        case 3: prog3_selection_sort(arr, n); break;
+        case 4: prog3_insertion_sort(arr, n); break;
+        default: return 0.0;
+    }
+    
+    clock_t end = clock();
+    return (double)(end - start) / CLOCKS_PER_SEC;
+}
