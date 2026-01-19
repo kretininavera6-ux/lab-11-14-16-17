@@ -1,1 +1,26 @@
+#ifndef PROG_FUNCTIONS_H
+#define PROG_FUNCTIONS_H
 
+#include <math.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Программа 1: Сумма после минимального по модулю
+int prog1_sum_after_min_abs(int* arr, int n);
+
+// Программа 2: Операции с double массивом
+double prog2_calc_value(double x);
+double prog2_array_sum(double* arr, int n, int begin, int end);
+int prog2_find_value(double* arr, int n, double value);
+double* prog2_apply_ceil(double* arr, int n);
+double prog2_max_on_positions(double* arr, int n, int type);
+
+// Программа 3: Сортировки
+void prog3_fill_random(int* arr, int n);
+void prog3_bubble_sort(int* arr, int n);
+void prog3_shaker_sort(int* arr, int n);
+void prog3_selection_sort(int* arr, int n);
+void prog3_insertion_sort(int* arr, int n);
+double prog3_measure_sort_time(int* arr, int n, int sort_type);
+
+#endif
